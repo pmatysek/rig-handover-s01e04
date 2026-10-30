@@ -7,7 +7,6 @@ import { DigestPage } from './views/digest.js';
 import { Layout } from './views/layout.js';
 import { StatusBoard } from './views/status.js';
 
-
 export function createApp(config: RigConfig = loadConfig()) {
   const app = new Hono();
 
