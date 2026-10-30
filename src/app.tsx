@@ -7,6 +7,7 @@ import { DigestPage } from './views/digest.js';
 import { Layout } from './views/layout.js';
 import { StatusBoard } from './views/status.js';
 
+
 export function createApp(config: RigConfig = loadConfig()) {
   const app = new Hono();
 
@@ -30,6 +31,19 @@ export function createApp(config: RigConfig = loadConfig()) {
           <DigestPage night={night} rows={rows} />
         </Layout>,
       );
+    } catch (error) {
+      if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT') {
+        return c.notFound();
+      }
+      throw error;
+    }
+  });
+
+  app.get('/api/digest/:night', (c) => {
+    const night = c.req.param('night');
+    try {
+      const digest = readNight(config.runsDir, night);
+      return c.json(digest.rows.toSorted((a, b) => a.job.localeCompare(b.job)));
     } catch (error) {
       if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT') {
         return c.notFound();
